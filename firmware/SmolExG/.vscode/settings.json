@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^& \"C:\\\\Users\\\\m\\\\\\.platformio\\\\penv\\\\Scripts\\\\platformio\\.exe\" run$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
