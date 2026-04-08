@@ -11,6 +11,7 @@
 #include "pffft.h"
 #include "filters.h"
 #include "fir_filter.h"
+#include "emg_server.h"
 
 // High resolution mode -
 // 0x0 - 32 kSPS (requires modifying ADC read to support, since the chip will switch to reporting 16-bit values)
@@ -81,6 +82,8 @@ void compute_hamming_window() {
 }
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(/*rotation=*/U8G2_R0, /*reset=*/U8X8_PIN_NONE, /*clk=*/5, /*data=*/4);
+
+EMGServer server{};
 
 void go_to_sleep() {
   // Power gate ADC and display.
@@ -184,6 +187,9 @@ void setup() {
 
   // Set up ADC for battery voltage monitoring.
   analogSetAttenuation(ADC_11db); // 0-2500mV.
+
+  init_wifi();
+  server.init();
 
   // Initialize ADS1298 ADC.
   bool adc_init = ads1298_init(
@@ -295,7 +301,12 @@ void setup() {
       auto start = micros();
       float sample_f = fir_filter.apply(raw_sample);
       int32_t sample = static_cast<int32_t>(sample_f);
-      
+
+      if (server.has_client()) {
+        last_activity_time = millis();
+        server.write(sample);
+      }
+
       // Add to rolling FFT circular buffer
       fft_circular_buffer[fft_buffer_idx] = sample_f;
       fft_buffer_idx = (fft_buffer_idx + 1) % FFT_SIZE;
