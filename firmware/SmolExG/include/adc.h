@@ -13,7 +13,7 @@ constexpr int ADS1298_DRDY_PIN = 7;
 
 constexpr float ADS1298_VREF = 2.4f;
 
-constexpr std::size_t RING_BUFFER_SIZE = 1024;
+constexpr std::size_t RING_BUFFER_SIZE = 4096;
 
 constexpr uint8_t ADC_CHANNEL = 0; // We only read the first channel right now.
 
